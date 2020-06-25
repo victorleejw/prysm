@@ -427,10 +427,10 @@ func (p *Status) Decay() {
 // Ideally, all peers would be reporting the same finalized epoch but some may be behind due to their own latency, or because of
 // their finalized epoch at the time we queried them.
 // Returns the best finalized root, epoch number, and list of peers that are at or beyond that epoch.
-func (p *Status) BestFinalized(maxPeers int, ourFinalizedEpoch uint64) ([]byte, uint64, []peer.ID) {
+func (p *Status) BestFinalized(maxPeers int, ourFinalizedEpoch uint64) ([]byte, uint64, []peer.ID, error) {
 	connected := p.Connected()
 	if len(connected) == 0 {
-		return make([]byte, 32), 0, nil
+		return nil, 0, nil, errors.New("no connected peers")
 	}
 	finalized := make(map[[32]byte]uint64)
 	rootToEpoch := make(map[[32]byte]uint64)
@@ -476,7 +476,7 @@ func (p *Status) BestFinalized(maxPeers int, ourFinalizedEpoch uint64) ([]byte, 
 		potentialPIDs = potentialPIDs[:maxPeers]
 	}
 
-	return targetRoot[:], targetEpoch, potentialPIDs
+	return targetRoot[:], targetEpoch, potentialPIDs, nil
 }
 
 // fetch is a helper function that fetches a peer status, possibly creating it.

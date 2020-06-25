@@ -214,7 +214,10 @@ func (s *Service) waitForMinimumPeers() {
 		required = flags.Get().MinimumSyncPeers
 	}
 	for {
-		_, _, peers := s.p2p.Peers().BestFinalized(params.BeaconConfig().MaxPeersToSync, s.chain.FinalizedCheckpt().Epoch)
+		_, _, peers, err := s.p2p.Peers().BestFinalized(params.BeaconConfig().MaxPeersToSync, s.chain.FinalizedCheckpt().Epoch)
+		if err != nil {
+			log.WithError(err).Debug("Could not determine best finalized")
+		}
 		if len(peers) >= required {
 			break
 		}
