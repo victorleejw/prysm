@@ -429,6 +429,9 @@ func (p *Status) Decay() {
 // Returns the best finalized root, epoch number, and list of peers that are at or beyond that epoch.
 func (p *Status) BestFinalized(maxPeers int, ourFinalizedEpoch uint64) ([]byte, uint64, []peer.ID) {
 	connected := p.Connected()
+	if len(connected) == 0 {
+		return nil, 0, nil
+	}
 	finalized := make(map[[32]byte]uint64)
 	rootToEpoch := make(map[[32]byte]uint64)
 	pidEpoch := make(map[peer.ID]uint64)

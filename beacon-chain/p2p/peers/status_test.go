@@ -633,7 +633,17 @@ func TestBestPeer(t *testing.T) {
 	}
 }
 
-func TestBestFinalized_returnsMaxValue(t *testing.T) {
+func TestBestFinalized_ReturnsNoPeersIfNoPeersConnected(t *testing.T) {
+	maxBadResponses := 0
+	maxPeers := 10
+	p := peers.NewStatus(maxBadResponses)
+	_, _, pids := p.BestFinalized(maxPeers, 0)
+	if len(pids) != 0 {
+		t.Fatalf("returned wrong number of peers, wanted 0, got %d", len(pids))
+	}
+}
+
+func TestBestFinalized_ReturnsMaxValue(t *testing.T) {
 	maxBadResponses := 2
 	maxPeers := 10
 	p := peers.NewStatus(maxBadResponses)
